@@ -31,7 +31,7 @@ export class User {
     private email: string;
     private name: string;
     private date_of_birth: Date;
-    private password: string;
+    password: string;
     private created_at: Date;
     private updated_at: Date;
     private email_verify_token: string; // jwt hoặc '' nếu đã xác thực email

@@ -1,9 +1,11 @@
 import { Request, Response, NextFunction } from 'express'
 import { ValidationChain, checkSchema, validationResult } from 'express-validator'
 import { RunnableValidationChains } from 'express-validator/src/middlewares/schema'
+import { User } from '~/models/schemas/User.schema'
+import database from '~/services/database.services'
 export const loginMiddleware = (req: Request, res: Response, next: NextFunction) => {
-    const { user, password } = req.body
-    if (!user || !password) {
+    const { name, password } = req.body;
+    if (!name || !password) {
         return res.status(400).json({
             message: 'user, password ko đc để trống'
         })
@@ -47,18 +49,27 @@ export const registerMiddleware = async (req: Request, res: Response, next: Next
         },
         email: {
             notEmpty: true,
-            isEmail: true
+            isEmail: true,
+            custom: {
+                options: async (value) => {
+                    const user = await database.user().findOne({ email: value });
+                    if (user) {
+                        throw new Error('email đã tổn tại');
+                    } else {
+                        return true;
+                    }
+                }
+            }
         }
     })
     await schemaRegister.run(req);
     const error = validationResult(req)
-    if(!error.isEmpty()) {
+    if (!error.isEmpty()) {
         return res.status(400).json({
-            status:'error',
+            status: 'error',
             error: error.mapped(),
-            fullError1: error.array(),
         })
-    }else{
+    } else {
         next()
     }
 }

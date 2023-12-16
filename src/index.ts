@@ -7,7 +7,6 @@ app.use(express.json());
 
 database.connect();
 app.use('/users', userRouter);
-
 app.listen(PORT, () => {
     console.log(`Example app listening on port ${PORT}`);
 });
