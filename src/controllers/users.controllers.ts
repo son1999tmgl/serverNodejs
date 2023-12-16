@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { validationResult } from 'express-validator';
 import { User } from '~/models/schemas/User.schema';
 import database from '~/services/database.services';
 export const loginController = (req: Request, res: Response) => {
