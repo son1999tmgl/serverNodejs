@@ -8,8 +8,8 @@ import { UserInfo } from 'os';
 
 config()
 export const loginController = async (req: Request, res: Response) => {
-    const { name, password } = req.body;
-    const u = await database.user().findOne({ name });
+    const { email, password } = req.body;
+    const u = await database.user().findOne({ email });
     if (u) {
         const hash = u.password
         if (bcrypt.compareSync(password, hash)) {

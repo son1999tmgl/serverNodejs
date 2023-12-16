@@ -4,8 +4,8 @@ import { RunnableValidationChains } from 'express-validator/src/middlewares/sche
 import { User } from '~/models/schemas/User.schema'
 import database from '~/services/database.services'
 export const loginMiddleware = (req: Request, res: Response, next: NextFunction) => {
-    const { name, password } = req.body;
-    if (!name || !password) {
+    const { email, password } = req.body;
+    if (!email || !password) {
         return res.status(400).json({
             message: 'user, password ko đc để trống'
         })
