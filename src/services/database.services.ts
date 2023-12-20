@@ -1,7 +1,7 @@
 import { Collection, Db, MongoClient } from 'mongodb';
-import { config } from 'dotenv';
 import { User } from '~/models/schemas/User.schema';
-config();
+require('dotenv').config();
+
 const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@facebook.jhpjjkt.mongodb.net/?retryWrites=true&w=majority`;
 
 class Database {

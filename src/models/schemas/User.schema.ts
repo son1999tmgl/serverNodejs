@@ -1,13 +1,8 @@
 import { ObjectId } from 'mongodb';
-
-enum UserVerifyStatus {
-    Unverified, // chưa xác thực email, mặc định = 0
-    Verified, // đã xác thực email
-    Banned // bị khóa
-}
+import { UserVerifyStatus } from '~/constants/enums';
 
 interface UserType {
-    _id?: ObjectId | undefined;
+    _id?: ObjectId;
     name: string;
     email?: string;
     password: string;
@@ -27,7 +22,7 @@ interface UserType {
 }
 
 export class User {
-    _id: ObjectId | undefined;
+    _id: ObjectId;
     name: string;
     email: string;
     date_of_birth: Date;
@@ -46,7 +41,7 @@ export class User {
     cover_photo: string; // optional
     constructor(user: UserType) {
         const date = new Date()
-        this._id = user._id;
+        this._id = user._id || new ObjectId();
         this.email = user.email || '';
         this.name = user.name;
         this.date_of_birth = user.date_of_birth || date;
