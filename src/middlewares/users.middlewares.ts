@@ -3,6 +3,8 @@ import { ValidationChain, checkSchema, validationResult } from 'express-validato
 import { RunnableValidationChains } from 'express-validator/src/middlewares/schema'
 import { User } from '~/models/schemas/User.schema'
 import database from '~/services/database.services'
+import { ParamsDictionary } from "express-serve-static-core";
+import { RegisterRequestBody } from '~/models/request/User.request'
 export const loginMiddleware = (req: Request, res: Response, next: NextFunction) => {
     const { email, password } = req.body;
     if (!email || !password) {
@@ -13,7 +15,7 @@ export const loginMiddleware = (req: Request, res: Response, next: NextFunction)
     next()
 }
 
-export const registerMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+export const registerMiddleware = async (req: Request<ParamsDictionary, any, RegisterRequestBody>, res: Response, next: NextFunction) => {
     const schemaRegister: RunnableValidationChains<ValidationChain> = checkSchema({
         name: {
             notEmpty: true,
@@ -52,7 +54,7 @@ export const registerMiddleware = async (req: Request, res: Response, next: Next
             isEmail: true,
             custom: {
                 options: async (value) => {
-                    const user = await database.user().findOne({ email: value });
+                    const user = await database.users.findOne({ email: value });
                     if (user) {
                         throw new Error('email đã tổn tại');
                     } else {
@@ -60,6 +62,9 @@ export const registerMiddleware = async (req: Request, res: Response, next: Next
                     }
                 }
             }
+        },
+        date_of_birth: {
+            isISO8601: true
         }
     })
     await schemaRegister.run(req);

@@ -28,30 +28,31 @@ interface UserType {
 
 export class User {
     _id: ObjectId | undefined;
-    private email: string;
-    private name: string;
-    private date_of_birth: Date;
+    name: string;
+    email: string;
+    date_of_birth: Date;
     password: string;
-    private created_at: Date;
-    private updated_at: Date;
-    private email_verify_token: string; // jwt hoặc '' nếu đã xác thực email
-    private forgot_password_token: string; // jwt hoặc '' nếu đã xác thực email
-    private verify: UserVerifyStatus;
+    created_at: Date;
+    updated_at: Date;
+    email_verify_token: string; // jwt hoặc '' nếu đã xác thực email
+    forgot_password_token: string; // jwt hoặc '' nếu đã xác thực email
+    verify: UserVerifyStatus;
 
-    private bio: string; // optional
-    private location: string; // optional
-    private website: string; // optional
-    private username: string; // optional
-    private avatar: string; // optional
-    private cover_photo: string; // optional
+    bio: string; // optional
+    location: string; // optional
+    website: string; // optional
+    username: string; // optional
+    avatar: string; // optional
+    cover_photo: string; // optional
     constructor(user: UserType) {
+        const date = new Date()
         this._id = user._id;
         this.email = user.email || '';
         this.name = user.name;
-        this.date_of_birth = user.date_of_birth || new Date();
+        this.date_of_birth = user.date_of_birth || date;
         this.password = user.password;
-        this.created_at = user.created_at || new Date();
-        this.updated_at = user.updated_at || new Date();
+        this.created_at = user.created_at || date;
+        this.updated_at = user.updated_at || date;
         this.email = user.email || '';
         this.email_verify_token = user.email_verify_token || '';
         this.forgot_password_token = user.forgot_password_token || '';
