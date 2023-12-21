@@ -1,3 +1,21 @@
 - là hàm nhận vào 4 tham số(hàm nhận vào 3 tham số là request handler).
 - Nếu 1 handler gọi next(<có truyền vào tham số>) | throw(vs hàm ko async) -> chạy đến error handler, ko chạy đến request handler
 - thứ tự tham số (err, req, res, next)
+
+- Thống nhất error:
+    + Lỗi thường: 
+        {
+            message: "",
+            error_info: "",
+        }
+    + Lỗi validation:
+        {
+            message: "",
+            error: {
+                [field:string]: {
+                    msg: string,
+                    location: string,
+                    value: any
+                }
+            }
+        }

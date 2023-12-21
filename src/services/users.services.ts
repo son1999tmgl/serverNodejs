@@ -8,7 +8,7 @@ import { signToken } from "~/utils/sign";
 class UserService {
     users: Collection<User>
     constructor() {
-        this.users = database.users
+        this.users = database.users;
     }
 
 
