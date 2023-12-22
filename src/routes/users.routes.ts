@@ -4,7 +4,7 @@ import { loginMiddleware, registerMiddleware } from '~/middlewares/users.middlew
 import { wrap } from '~/utils/handler';
 const userRouter = Router();
 
-userRouter.post('/login', loginMiddleware, loginController);
+userRouter.post('/login', loginMiddleware, wrap(loginController));
 userRouter.post('/register', registerMiddleware, wrap(registerController));
 
 export default userRouter;

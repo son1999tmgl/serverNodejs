@@ -1,18 +1,23 @@
-import { Collection } from "mongodb";
+import { Collection, InsertOneResult, ObjectId } from "mongodb";
 import { User } from "~/models/schemas/User.schema";
 import database from "./database.services";
 import { RegisterRequestBody } from "~/models/request/User.request";
 import { sha256_decode, sha256_encode } from "~/utils/crypto";
 import { signToken } from "~/utils/sign";
+import { Request } from "express";
+import { ParamsDictionary } from "express-serve-static-core";
+import { httpStatusCode } from "~/constants/httpStatus";
+import { RefreshToken } from "~/models/schemas/RefreshToken";
 
 class UserService {
     users: Collection<User>
+    refreshToken: Collection<RefreshToken>
     constructor() {
         this.users = database.users;
+        this.refreshToken = database.refreshToken;
     }
 
-
-    private assignAccessToken(user_id: string) {
+    private assignAccessToken(user_id: string): Promise<string> {
         return signToken({
             payload: {
                 user_id: user_id
@@ -24,7 +29,7 @@ class UserService {
         })
     }
 
-    private refreshAccessToken(user_id: string) {
+    private refreshAccessToken(user_id: string): Promise<string> {
         return signToken({
             payload: {
                 user_id: user_id
@@ -34,6 +39,17 @@ class UserService {
                 expiresIn: '100 days'
             }
         })
+    }
+
+    signAcessTokenAndRefreshToken(user_id: string): Promise<[string, string]> {
+        return Promise.all([this.assignAccessToken(user_id?.toString()), this.refreshAccessToken(user_id?.toString())])
+    }
+
+    private async insertRefreshToken(refreshToken: string, user_id: ObjectId) {
+        await this.refreshToken.insertOne(new RefreshToken({
+            token: refreshToken,
+            user_id: user_id
+        }))
     }
 
     async register(payload: RegisterRequestBody) {
@@ -46,41 +62,25 @@ class UserService {
             }
         }
         password = sha256_encode(password)
-        const user = await this.users.insertOne(new User({ name, email, password, date_of_birth: new Date(date_of_birth) }))
+        const user: InsertOneResult<User> = await this.users.insertOne(new User({ name, email, password, date_of_birth: new Date(date_of_birth) }))
+        const [accessToken, refreshToken]: [string, string] = await this.signAcessTokenAndRefreshToken(user.insertedId.toString())
+        await this.insertRefreshToken(refreshToken, user.insertedId)
         return {
             status: 'success',
-            user: user
+            user: user,
+            accessToken,
+            refreshToken
         }
     }
 
-    async login(payload: RegisterRequestBody) {
-        const { email, password } = payload;
-        const user = await this.users.findOne({ email });
-        if (user) {
-            const paswword_check = sha256_decode(user.password)
-            if (password === paswword_check) {
-                try {
-                    const resolve = await Promise.all([this.assignAccessToken(user._id?.toString()), this.refreshAccessToken(user._id?.toString())])
-                    return {
-                        status: 'success',
-                        accessToken: resolve[0],
-                        refreshToken: resolve[1],
-                    }
-                } catch (error) {
-                    return {
-                        status: 'error',
-                        errorMessage: error
-                    }
-                }
-            }
-            return {
-                status: 'error',
-                errorMessage: "Password is incorrect",
-            }
-        }
+
+    async login(user: User) {
+        const [accessToken, refreshToken] = await this.signAcessTokenAndRefreshToken(user._id.toString())
+        await this.insertRefreshToken(refreshToken, user._id)
         return {
-            status: 'error',
-            errorMessage: "User not exist",
+            status: httpStatusCode.ACCEPTED,
+            accessToken: accessToken,
+            refreshToken: refreshToken,
         }
     }
 

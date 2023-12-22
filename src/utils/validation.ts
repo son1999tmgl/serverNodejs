@@ -12,14 +12,10 @@ export const validate = (validation: RunnableValidationChains<ValidationChain>) 
         if (errors.isEmpty()) {
             return next();
         }
-        const arrErr = errors.mapped();
-        console.log(arrErr);
-        
+        const arrErr = errors.mapped();        
         let errEntity:EntityError = new EntityError({errors: {}})
         for(const key in arrErr) {
-            const {msg} = arrErr[key];
-            console.log(msg instanceof ErrorWidthStatus);
-            
+            const {msg} = arrErr[key];            
             if(msg instanceof ErrorWidthStatus && msg.status !== httpStatusCode.UNPROCESSABLE_ENTITY) {
                 next(msg);
             }else{
