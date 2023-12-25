@@ -1,10 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import userService from '~/services/users.services';
 import { ParamsDictionary } from "express-serve-static-core";
-import { RegisterRequestBody } from '~/models/request/User.request';
-import { EntityError } from '~/utils/errors';
-import { httpStatusCode } from '~/constants/httpStatus';
-import { User } from '~/models/schemas/User.schema';
+import { JwtPayloadL, LogoutRequestBody, RegisterRequestBody } from '~/models/request/User.request';
 require('dotenv').config();
 
 export const loginController = async (req: Request, res: Response, next: NextFunction) => {
@@ -27,4 +24,11 @@ export const registerController = async (req: Request<ParamsDictionary, any, Reg
         })
     }
     next(result)
+};
+
+export const logoutController = async (req: Request<ParamsDictionary, any, LogoutRequestBody>, res: Response) => {
+    const decoded_refreshToken: JwtPayloadL = req.decoded_refreshToken;
+    const refresh_token = req.body.refresh_token;
+    const result =  await userService.logout(refresh_token, decoded_refreshToken)
+    return res.json(result)
 };

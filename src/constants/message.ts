@@ -23,4 +23,19 @@ export const USER_MESSAGE = {
     },
     ERROR_VALIDATION: "Data validation error",
     NOT_FOUND_USER: "User not found",
+    ACCESSTOKEN: {
+        INVALID: "Invalid access token",
+        EXPIRED: "Access token expired",
+        NOT_EMPTY: "Access token is required"
+    },
+    REFRESHTOKEN: {
+        NOT_EMPTY: "Refresh token is required",
+        INVALID: "Invalid refresh token"
+    },
+    LOGOUT_SUCCESS: 'Logout successfuly',
+
+    ACCESS_TOKEN_EXPIRED_IN: '15m',
+    REFRESH_TOKEN_EXPIRED_IN: '7d',
+    VERIFY_EMAIL_TOKEN_EXPIRED_IN: '10d',
+
 };
